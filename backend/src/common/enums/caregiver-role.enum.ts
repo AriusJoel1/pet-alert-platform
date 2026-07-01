@@ -1,0 +1,5 @@
+export enum CaregiverRole {
+  SOLIDARIO = 'SOLIDARIO',
+  PROFESIONAL = 'PROFESIONAL',
+  ESPECIALIZADO = 'ESPECIALIZADO',
+}
