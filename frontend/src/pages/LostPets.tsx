@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import PetMap from "../components/PetMap";
-
+import { uploadImage } from "../services/upload";
 
 interface Pet {
   id?: number;
@@ -13,6 +13,8 @@ interface Pet {
   latitude: number;
   longitude: number;
 }
+
+
 
 const emptyPet: Pet = {
   name: "",
@@ -32,7 +34,7 @@ export default function LostPets() {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const [search, setSearch] = useState("");
-
+  const [searchType, setSearchType] = useState("name");
   const [form, setForm] = useState<Pet>(emptyPet);
 
   useEffect(() => {
@@ -48,6 +50,17 @@ export default function LostPets() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function searchPet() {
+    const response = await api.get("/pets/search", {
+      params: {
+        type: searchType,
+        value: search,
+      },
+    });
+
+    setPets(response.data);
   }
 
   async function savePet() {
@@ -85,9 +98,9 @@ export default function LostPets() {
 
     }
 
-    cancelEdition();
+    await loadPets();
 
-    loadPets();
+    cancelEdition();
   }
 
   function editPet(pet: Pet) {
@@ -133,19 +146,7 @@ export default function LostPets() {
 
   }
 
-  const filteredPets = useMemo(() => {
-
-    return pets.filter((pet) =>
-
-      pet.name.toLowerCase().includes(search.toLowerCase()) ||
-
-      pet.species.toLowerCase().includes(search.toLowerCase()) ||
-
-      pet.breed.toLowerCase().includes(search.toLowerCase())
-
-    );
-
-  }, [pets, search]);
+  const filteredPets = pets;
 
   return (
 
@@ -211,16 +212,51 @@ export default function LostPets() {
           }
         />
           
+        
+
         <input
-          placeholder="Foto"
-          value={form.photo}
-          onChange={(e)=>
-            setForm({
-              ...form,
-              photo:e.target.value
-            })
-          }
+          type="file"
+          accept="image/*"
+          onChange={async (e) => {
+
+            if (!e.target.files?.length) return;
+
+            try {
+
+              const url = await uploadImage(e.target.files[0]);
+
+              setForm({
+                ...form,
+                photo: url,
+              });
+
+            } catch {
+
+              alert("No se pudo subir la imagen.");
+
+            }
+
+          }}
         />
+
+        <br />
+
+        {form.photo && (
+
+          <img
+            src={form.photo}
+            width={180}
+            style={{
+              marginTop: 10,
+              borderRadius: 10,
+              objectFit: "cover",
+            }}
+          />
+
+        )}
+
+
+
 
         <input
           type="number"
@@ -285,23 +321,37 @@ export default function LostPets() {
 
       <br/>
 
-      <input
-
-        placeholder="Buscar mascota..."
-
-        value={search}
-
-        onChange={(e)=>
-          setSearch(e.target.value)
-        }
-
+      <select
+        value={searchType}
+        onChange={(e) => setSearchType(e.target.value)}
         style={{
-          width:"100%",
-          padding:12,
-          marginBottom:20
+          width: "100%",
+          padding: 12,
+          marginBottom: 10,
         }}
+      >
+        <option value="name">Nombre</option>
+        <option value="species">Especie</option>
+        <option value="breed">Raza</option>
+      </select>
 
+      <input
+        placeholder="Buscar mascota..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          width: "100%",
+          padding: 12,
+          marginBottom: 10,
+        }}
       />
+
+      <button
+        className="primary-btn"
+        onClick={searchPet}
+      >
+        Buscar
+      </button>
 
       {loading && <p>Cargando...</p>}
 
@@ -309,34 +359,37 @@ export default function LostPets() {
         <table className="table">
 
           <thead>
-
             <tr>
-
               <th>ID</th>
-
+              <th>Foto</th>
               <th>Nombre</th>
-
               <th>Especie</th>
-
               <th>Raza</th>
-
               <th>Acciones</th>
-
             </tr>
-
           </thead>
 
           <tbody>
 
             {filteredPets.map((pet)=>(
                 <tr key={pet.id}>
-
                 <td>{pet.id}</td>
 
+                <td>
+                  <img
+                    src={pet.photo}
+                    width={70}
+                    height={70}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                    alt={pet.name}
+                  />
+                </td>
+
                 <td>{pet.name}</td>
-
                 <td>{pet.species}</td>
-
                 <td>{pet.breed}</td>
 
                 <td>

@@ -1,1 +1,3 @@
-notification-observer.interface.ts
+export interface NotificationObserver {
+  update(message: string): Promise<void>;
+}

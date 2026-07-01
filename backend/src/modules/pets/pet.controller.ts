@@ -10,7 +10,8 @@ import {
 } from "@nestjs/common";
 
 import { PetService } from "./pet.service";
-
+import { UploadedFile, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { CreatePetDto } from "./dto/create-pet.dto";
 import { UpdatePetDto } from "./dto/update-pet.dto";
 
@@ -28,12 +29,35 @@ export class PetController {
     return this.petService.create(dto);
   }
 
+  @Post("search-image")
+  @UseInterceptors(FileInterceptor("file"))
+  searchImage(
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.petService.searchImage(file);
+  }
+
+
   @Get()
   findAll(
     @Query("search")
     search?: string,
   ) {
     return this.petService.findAll(search);
+  }
+
+  @Get("search")
+  search(
+    @Query("type")
+    type: string,
+
+    @Query("value")
+    value: string,
+  ) {
+    return this.petService.search(
+      type,
+      value,
+    );
   }
 
   @Get(":id")

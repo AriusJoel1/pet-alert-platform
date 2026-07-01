@@ -7,22 +7,34 @@ interface Pet {
   name: string;
   species: string;
   breed: string;
+  description: string;
+}
+
+interface Notification {
+  id: number;
+  message: string;
+  receiver: string;
+  createdAt: string;
 }
 
 export default function Dashboard() {
+
   const [pets, setPets] = useState<Pet[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     loadPets();
+    loadNotifications();
   }, []);
 
   async function loadPets() {
-    try {
-      const response = await api.get("/pets");
-      setPets(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    const response = await api.get("/pets");
+    setPets(response.data);
+  }
+
+  async function loadNotifications() {
+    const response = await api.get("/notifications");
+    setNotifications(response.data);
   }
 
   return (
@@ -39,34 +51,45 @@ export default function Dashboard() {
         }}
       >
         <StatCard
-          title="Mascotas Perdidas"
-          value={pets.length}
-          emoji="🐾"
-        />
-
-        <StatCard
-          title="Avistamientos"
-          value={0}
-          emoji="📍"
-        />
-
-        <StatCard
-          title="Cuidadores"
-          value={0}
-          emoji="👨‍⚕️"
-        />
-
-        <StatCard
           title="Alertas"
-          value={0}
+          value={notifications.length}
           emoji="🔔"
+        />
+
+        <StatCard
+          title="Perros"
+          value={
+            pets.filter(
+              (p) => p.species === "Perro"
+            ).length
+          }
+          emoji="🐶"
+        />
+
+        <StatCard
+          title="Gatos"
+          value={
+            pets.filter(
+              (p) => p.species === "Gato"
+            ).length
+          }
+          emoji="🐱"
+        />
+
+        <StatCard
+          title="Aves"
+          value={
+            pets.filter(
+              (p) => p.species === "Ave"
+            ).length
+          }
+          emoji="🦜"
         />
       </div>
 
       <br />
-      <br />
 
-      <h2>Últimas mascotas registradas</h2>
+      <h2>Últimos registros</h2>
 
       <table className="table">
         <thead>
@@ -85,6 +108,28 @@ export default function Dashboard() {
               <td>{pet.name}</td>
               <td>{pet.species}</td>
               <td>{pet.breed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <br />
+
+      <h2>Últimas alertas</h2>
+
+      <table className="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Mensaje</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {notifications.slice(0, 5).map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
+              <td>{item.message}</td>
             </tr>
           ))}
         </tbody>

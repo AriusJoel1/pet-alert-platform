@@ -1,6 +1,10 @@
-import './Navbar.css';
+import "./Navbar.css";
 
 export default function Navbar(){
+
+const date=
+
+new Date();
 
 return(
 
@@ -11,6 +15,12 @@ return(
 🐾 Pet Alert Platform
 
 </h2>
+
+<div>
+
+{date.toLocaleDateString()}
+
+</div>
 
 </nav>
 
