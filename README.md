@@ -576,19 +576,6 @@ Las principales entidades del sistema son:
 
 Relaciones implementadas mediante TypeORM.
 
----
-
-# Capturas del sistema
-
-Se recomienda incluir imágenes de:
-
-- Dashboard
-- Registro de mascotas
-- Registro de avistamientos
-- Gestión de cuidadores
-- Mapa
-- Búsqueda
-- Notificaciones
 
 ---
 
