@@ -1,0 +1,35 @@
+.card{
+
+background:white;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0px 2px 8px rgba(0,0,0,.15);
+
+width:220px;
+
+}
+
+.card h2{
+
+font-size:40px;
+
+}
+
+.card h3{
+
+margin-top:10px;
+
+font-size:34px;
+
+}
+
+.card p{
+
+margin-top:8px;
+
+color:gray;
+
+}
